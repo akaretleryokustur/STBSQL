@@ -1,0 +1,240 @@
+select masraf_yeri,SUM(tutar) from MUHASEBE group by masraf_yeri ;10000033;sys;2021 02 23 17H 02m
+select _ALL from MUHASEBE ;10000033;sys;2021 02 23 17H 02m
+select _ALL from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select _ALL from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select _ALL from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select _ALL from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select _ALL from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select sqlstatement from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select sqlstatement from SQLAREA ;10000033;sys;2021 02 23 17H 02m
+select _ALL from MUHASEBE ;10000034;sys;2021 02 23 20H 02m
+select _ALL from MUHASEBE ;10000035;sys;2021 02 23 21H 02m
+select _ALL from MUHASEBE ;10000038;sys;2021 02 23 21H 02m
+select _ALL from MUHASEBE ;10000048;sys;2021 02 24 10H 02m
+select _ALL from MUHASEBE ;10000053;sys;2021 02 24 11H 02m
+select _ALL from MUHASEBE ;10000053;sys;2021 02 24 11H 02m
+select _ALL from MUHASEBE ;10000055;sys;2021 02 24 11H 02m
+select _ALL from SQLAREA ;10000056;sys;2021 02 24 11H 02m
+select _ALL from SQLAREA ;10000056;sys;2021 02 24 11H 02m
+select _ALL from SQLAREA ;10000056;sys;2021 02 24 11:37
+select _ALL from SQLAREA ;10000057;sys;2021 02 24 11:38
+select _ALL from MUHASEBE ;10000061;sys;2021 02 24 16:56
+select _ALL from MUHASEBE ;10000061;sys;2021 02 24 19:11
+select _ALL from MUHASEBE ;10000062;sys;2021 02 24 19:14
+select _ALL from SQLAREA ;10000062;sys;2021 02 24 23:47
+select _ALL from tables ;10000062;sys;2021 02 25 00:17
+select _ALL from tables ;10000062;sys;2021 02 25 00:17
+select tablename from tables ;10000062;sys;2021 02 25 00:18
+select tablename from tables ;10000062;sys;2021 02 25 00:18
+select polid,zeylno,dovkod,tlnet from TAHAKKUK ;10000062;sys;2021 02 25 00:20
+select dovkod,SUM(tlnet) from TAHAKKUK group by dovkod ;10000062;sys;2021 02 25 00:21
+select dovkod,SUM(tlnet) from TAHAKKUK group by dovkod ;10000062;sys;2021 02 25 00:22
+select _ALL from SQLAREA ;10000062;sys;2021 02 25 00:22
+select _ALL from police ;10000062;sys;2021 02 27 12:32
+select _ALL from police ;10000062;sys;2021 02 27 12:33
+select branskod,dovkod,SUM(anapara) from police group by branskod,dovkod ;10000062;sys;2021 02 27 12:34
+select branskod,dovkod,polcins,SUM(anapara) from police group by branskod,dovkod,polcins ;10000062;sys;2021 02 27 13:52
+select _ALL from cenk ;10000067;sys;2021 02 27 14:08
+select _ALL from cenk ;10000067;sys;2021 02 27 14:09
+select _ALL from cenk ;10000068;sys;2021 02 27 14:58
+select _ALL from cenk ;10000068;sys;2021 02 27 14:59
+select _ALL from cenk ;10000068;sys;2021 02 27 15:01
+select _ALL from cenk ;10000070;sys;2021 02 27 15:04
+select _ALL from cenk ;10000071;sys;2021 02 27 15:05
+select _ALL from cenk ;10000070;sys;2021 02 27 15:06
+select _ALL from cenk ;10000070;sys;2021 02 27 15:07
+select _ALL from cenk ;10000070;sys;2021 02 27 15:07
+select _ALL from cenk ;10000070;sys;2021 02 27 15:08
+select _ALL from cenk ;10000070;sys;2021 02 27 15:08
+select _ALL from cenk ;10000070;sys;2021 02 27 15:10
+select _ALL from cenk ;10000070;sys;2021 02 27 15:11
+select _ALL from cenk ;10000072;sys;2021 02 27 15:12
+select _ALL from cenk ;10000072;sys;2021 02 27 15:12
+select _ALL from cenk ;10000072;sys;2021 02 27 15:12
+select _ALL from cenk ;10000073;sys;2021 02 27 15:20
+select _ALL from police ;10000073;sys;2021 02 27 15:20
+select _ALL from aaa ;10000074;sys;2021 02 27 15:22
+select _ALL from BJKKADRO ;10000075;sys;2021 02 27 17:06
+select _ALL from cenk ;10000075;sys;2021 02 27 19:30
+select _ALL from cenk ;10000075;sys;2021 02 27 19:31
+select _ALL from cenk ;10000075;sys;2021 02 27 19:32
+select _ALL from cenk ;10000075;sys;2021 02 27 19:32
+select _ALL from cenk ;10000075;sys;2021 02 27 21:57
+select _ALL from cenk ;10000075;sys;2021 02 27 21:57
+select _ALL from cenk ;10000075;sys;2021 02 27 21:58
+select _ALL from tables ;10000075;sys;2021 02 27 23:26
+select _ALL from tables ;10000075;sys;2021 02 27 23:27
+select _ALL from tables ;10000075;sys;2021 02 27 23:27
+select _ALL from tables ;10000075;sys;2021 02 27 23:28
+select tablename from tables ;10000075;sys;2021 02 27 23:28
+select _ALL from person ;10000075;sys;2021 02 27 23:28
+select _ALL from person ;10000075;sys;2021 02 27 23:29
+select _ALL from person ;10000076;sys;2021 02 28 12:20
+select _ALL from police ;10000076;sys;2021 02 28 12:20
+select _ALL from police ;10000076;sys;2021 02 28 12:20
+select _ALL rom police ;10000076;sys;2021 02 28 12:51
+select dovkod,SUM(anapara),SUM(polid) from police group by dovkod ;10000076;sys;2021 02 28 12:52
+select dovkod,sum(anapara) from police group by dovkod ;10000076;sys;2021 02 28 12:52
+select SUM(anapara) from police ;10000079;sys;2021 02 28 13:20
+select SUM(anapara) from police ;10000079;sys;2021 02 28 13:22
+select SUM(anapara) from police ;10000079;sys;2021 02 28 13:34
+select _ALL from police ;10000080;sys;2021 02 28 13:38
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:40
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:41
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:42
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:43
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:44
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:45
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:46
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:46
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:48
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:50
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:50
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:50
+select SUM(anapara) from police ;10000080;sys;2021 02 28 13:51
+select SUM(anapara) from police ;10000082;sys;2021 02 28 13:55
+select count(_ALL) from police ;10000082;sys;2021 02 28 13:56
+select _ALL from police ;10000082;sys;2021 02 28 13:56
+select dovkod,SUM(anapara) from police group by dovkod ;10000082;sys;2021 02 28 13:56
+select count(_ALL) from police ;10000082;sys;2021 02 28 14:03
+select count(_ALL) from police ;10000082;sys;2021 02 28 14:04
+select count(_ALL) from police ;10000082;sys;2021 02 28 14:06
+select SUM(anapara) from police ;10000084;sys;2021 02 28 14:07
+select SUM(anapara) from police ;10000084;sys;2021 02 28 14:12
+select sum(anapara) from police ;10000084;sys;2021 02 28 14:12
+select _ALL from cenk ;10000084;sys;2021 02 28 16:12
+select _ALL from cenk ;10000084;sys;2021 02 28 16:12
+select _ALL from cenk ;10000084;sys;2021 02 28 16:14
+select _ALL from cenk ;10000084;sys;2021 02 28 16:14
+select _ALL from cenk ;10000106;sys;2021 03 01 11:36
+select _ALL from police ;10000106;sys;2021 03 01 11:36
+select _ALL from cenk ;10000117;sys;2021 03 01 16:50
+select _ALL from cenk ;10000117;sys;2021 03 01 16:50
+select _ALL from cenk ;10000117;sys;2021 03 01 16:51
+select _ALL from MUHASEBE ;10000119;sys;2021 03 01 21:35
+select _ALL from MUHASEBE ;10000120;sys;2021 03 01 23:13
+select _ALL from MUHASEBE ;10000123;sys;2021 03 02 21:59
+select _ALL from police ;10000123;sys;2021 03 02 22:00
+select _ALL from muhasebe ;10000123;sys;2021 03 02 22:16
+select _ALL frmo MUHASEBE ;10000128;sys;2021 03 02 22:33
+select _ALL from police ;10000130;sys;2021 03 04 23:51
+select _ALL from MUHASEBE ;10000133;sys;2021 03 14 12:29
+select tarih,SUM(tutar) from MUHASEBE group by tarih ;10000133;sys;2021 03 22 00:05
+select _ALL from tables ;10000136;sys;2021 12 22 23:16
+select _ALL from tables ;10000136;sys;2021 12 22 23:17
+select tablename from tables ;10000136;sys;2021 12 22 23:18
+select _ALL from devreq ;10000136;sys;2021 12 22 23:18
+select _ALL from devreq ;10000136;sys;2021 12 22 23:18
+select tablename from tables ;10000136;sys;2021 12 22 23:19
+select _ALL from cenk ;10000136;sys;2021 12 22 23:20
+select _ALL from muhasebe ;10000136;sys;2021 12 22 23:20
+select _ALL from muhasebe ;10000136;sys;2021 12 22 23:20
+select tarih,masraf_yeri,SUM(tutar) from muhasebe group by tarih,masraf_yeri ;10000136;sys;2021 12 22 23:22
+select _ALL from cenk ;10000140;sys;2023 04 12 14:47
+select _ALL from person ;10000140;sys;2023 04 12 14:47
+select _ALL from BJKKADRO ;10000140;sys;2023 04 12 14:48
+select _ALL from cenk ;10000142;cenk;2023 04 12 14:51
+select _ALL from BJKKADRO ;10000144;cenk;2023 04 12 14:52
+select _ALL from tables ;10000147;sys;2023 04 12 14:53
+select _ALL from tahsilat ;10000148;cenk;2023 04 12 14:56
+select _ALL from police ;10000148;cenk;2023 04 12 14:57
+select dovkod,sum(anapara) from police group by dovkod ;10000148;cenk;2023 04 12 14:58
+select branskod,dovkod,SUM(anapara) from police group by branskod,dovkod ;10000148;cenk;2023 04 12 14:59
+select polcins,branskod,dovkod,SUM(anapara) from police group by polcins,branskod,dovkod ;10000148;cenk;2023 04 12 15:11
+select polcins,branskod,dovkod,SUM(anapara) from police group by polcins,branskod,dovkod order by polcins;10000148;cenk;2023 04 12 15:11
+select polcins,branskod,dovkod,SUM(anapara) from police group by polcins,branskod,dovkod order by polcins;10000154;sys;2023 04 12 21:49
+select _ALL from PP_SCOPE1 ;10000154;sys;2023 04 12 21:49
+select polcins,branskod,dovkod,SUM(anapara) from police group by polcins,branskod,dovkod order by polcins;10000155;sys;2023 04 12 21:52
+select _ALL from police ;10000167;sys;2023 04 13 11:18
+select polcins,branskod,dovkod,count(polid) from police group by polcins,branskod,dovkod ;10000167;sys;2023 04 13 11:20
+select polcins,branskod,dovkod,count(polid) from police where polcins="D" group by polcins,branskod,dovkod ;10000167;sys;2023 04 13 11:21
+select polcins,branskod,dovkod,MAX(anapara) from police group by polcins,branskod,dovkod ;10000168;sys;2023 04 13 12:46
+select dovkod,max(anapara) from police group by dovkod ;10000168;sys;2023 04 13 12:56
+select _ALL from police ;10000169;sys;2023 04 13 17:20
+select _ALL from police ;10000169;sys;2023 04 13 17:57
+select _ALL from police ;10000169;sys;2023 04 13 17:58
+select _ALL from police ;10000169;sys;2023 04 13 17:58
+select dovkod,sum(anapara) from police group by dovkod ;10000169;sys;2023 04 13 18:22
+select _ALL from police ;10000169;sys;2023 04 13 21:50
+select dovkod,sum(anapara) from police group by dovkod ;10000169;sys;2023 04 13 21:50
+select dovkod,count(anapara) from police group by dovkod ;10000169;sys;2023 04 17 14:24
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 16:30
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 16:31
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 16:33
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 16:37
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 16:39
+select distinct(dovkod) from police where dovkod="TL" ;10000172;sys;2023 04 17 16:40
+select dovkod,sum(anapara) from police ;10000172;sys;2023 04 17 16:41
+select dovkod,sum(anapara) from police where dovkod=GBP group by dovkod ;10000172;sys;2023 04 17 16:42
+select dovkod,sum(anapara) from police where dovkod="GBP" ;10000172;sys;2023 04 17 16:42
+select _ALL from police ;10000172;sys;2023 04 17 16:42
+select distinct(branskod) from police ;10000172;sys;2023 04 17 16:42
+select dovkod,sum(anapara) from police where dovkod=GBP group by dovkod ;10000172;sys;2023 04 17 17:42
+select dovkod,sum(anapara) from police where dovkod="GBP" group by anapara ;10000172;sys;2023 04 17 17:43
+select distinct(dovkod) from police where dovkod="GBP" ;10000172;sys;2023 04 17 17:44
+select distinct(dovkod) from police where dovkod="GBP" group by dovkod ;10000172;sys;2023 04 17 17:49
+select distinct(dovkod) from police where dovkod="GBP" group by dovkod ;10000172;sys;2023 04 17 18:05
+select distinct(dovkod) from police where dovkod="GBP" ;10000172;sys;2023 04 17 18:05
+select dovkod,sum(anapara) from police where dovkod="GBP" group by anapara ;10000172;sys;2023 04 17 18:05
+select dovkod,sum(anapara) from police group by anapara ;10000172;sys;2023 04 17 18:06
+select dovkod,sum(anapara) from police group by anapara ;10000172;sys;2023 04 17 18:07
+select dovkod,sum(anapara) from police where dovkod="GBP" group by anapara ;10000172;sys;2023 04 17 18:07
+select distinct(dovkod) from police where dovkod="GBP" ;10000172;sys;2023 04 17 18:08
+select distinct(dovkod) from police ;10000172;sys;2023 04 17 18:08
+select avg(anapara) from police where dovkod="TL" ;10000172;sys;2023 04 17 19:33
+select avg(anapara) from police ;10000172;sys;2023 04 17 19:34
+select avg(anapara) from police group by dovkod ;10000172;sys;2023 04 17 19:35
+select dovkod,avg(anapara) from police group by dovkod ;10000172;sys;2023 04 17 19:37
+select avg(anapara) from police ;10000172;sys;2023 04 17 19:49
+select dovkod,avg(anapara) from police group by dovkod ;10000173;sys;2023 04 17 19:54
+select dovkod,avg(anapara) from police ;10000173;sys;2023 04 17 19:55
+select dovkod,avg(anapara) from police group by dovkod ;10000173;sys;2023 04 17 20:03
+select _ALL from police ;10000173;sys;2023 04 17 20:03
+select dovkod,SUM(anapara) from police group by dovkod ;10000173;sys;2023 04 17 20:04
+select dovkod,branskod,sum(anapara) from police group by dovkod,branskod ;10000173;sys;2023 04 18 00:00
+select dovkod,branskod,count(anapara) from police group by dovkod,branskod ;10000173;sys;2023 04 18 00:01
+select _ALL from PP ;10000173;sys;2023 04 18 00:20
+select _ALL from PP ;10000173;sys;2023 04 18 00:31
+select task_id,start_date,finish_date from pp where resource="Analiz.2" ;10000173;sys;2023 04 18 00:32
+select resource,sum(effort) from pp group by resource ;10000173;sys;2023 04 18 00:33
+select task_type,sum(effort) from pp group by task_type ;10000173;sys;2023 04 18 00:34
+select resource,count(effort) from pp group by resource ;10000173;sys;2023 04 18 00:35
+select resource,sum(effort) from pp group by resource ;10000173;sys;2023 04 18 00:36
+select resource,sum(effort) from pp group by resource ;10000173;sys;2023 04 18 00:37
+select _ALL from pp ;10000173;sys;2023 04 18 00:46
+select resource,sum(effort) from pp group by resource ;10000173;sys;2023 04 18 00:47
+select _ALL from police ;10000173;sys;2023 04 18 00:48
+select dovkod,sum(anapara) from police group by dovkod ;10000173;sys;2023 04 18 00:48
+select resource,sum(effort) from pp group by resource ;10000173;sys;2023 04 18 00:49
+select resource,sum(effort) from pp where resource <> "" group by;10000173;sys;2023 04 18 00:50
+select _ALL from pp ;10000175;sys;2023 04 18 18:46
+select module,sum(effort) from pp group by module ;10000175;sys;2023 04 18 18:47
+select task_type,sum(effort) from pp group by task_type ;10000175;sys;2023 04 18 18:47
+select task_type,sum(effort) from pp where task_type<>"Proje Görevi" group by task_type;10000175;sys;2023 04 18 18:48
+select taskid,resource,effort,start_date,finish_date from pp where utilizatio_ratio < 100 ;10000175;sys;2023 04 18 18:53
+select taskid,resource,effort,start_date,finish_date from pp where utilizatio_ratio<100 ;10000175;sys;2023 04 18 18:53
+select taskid,resource,effort,start_date,finish_date from pp where utilizatio_ratio=100 ;10000175;sys;2023 04 18 18:54
+select taskid,resource,effort,start_date,finish_date from pp where utilizatio_ratio="100" ;10000175;sys;2023 04 18 18:54
+select taskid,resource,effort,start_date,finish_date from pp where utilization_ratio=100 ;10000175;sys;2023 04 18 18:54
+select taskid,resource,effort,start_date,finish_date from pp where utilization_ratio<100 ;10000175;sys;2023 04 18 18:54
+select distinct(resource) from pp ;10000175;sys;2023 04 19 14:51
+select resource,count(effort) from pp group by resource ;10000175;sys;2023 04 19 14:51
+select distinct(taskid) from pp ;10000175;sys;2023 04 19 14:52
+select taskid,count(effort) from pp ;10000175;sys;2023 04 19 14:52
+select taskid,count(effort) from pp group by taskid ;10000175;sys;2023 04 19 14:53
+select module,count(effort) from pp group by module ;10000175;sys;2023 04 19 17:15
+select taskid,task_id from pp ;10000175;sys;2023 04 19 21:01
+select distinct(dovkod) from police ;10000179;sys;2023 04 26 19:00
+select distinct(dovkod) from police group by dovkod ;10000179;sys;2023 04 26 19:00
+select _ALL from police ;10000180;sys;2023 04 26 19:02
+select distinct(branskod),distinct(dovkod) from police group by branskod,dovkod ;10000180;sys;2023 04 26 19:02
+select distinct(branskod) from police group by branskod ;10000180;sys;2023 04 26 19:03
+select branskod,dovkod,sum(anapara) from police group by branskod,dovkod ;10000180;sys;2023 04 26 19:04
+select branskod,dovkod,sum(anapara) from police group by branskod,dovkod ;10000181;sys;2023 04 26 19:09
+select branskod,dovkod,sum(anapara) from police group by branskod,dovkod ;10000183;sys;2023 04 26 19:11
+select distinct(dovkod) from police ;10000183;sys;2023 05 10 21:37
+select distinct(dovkod) from police group by dovkod ;10000183;sys;2023 05 10 21:38
+select distinct(branskod) from police group by branskod ;10000183;sys;2023 05 10 21:38
+select distinct(branskod) from police group by branskod ;10000184;sys;2023 05 27 10:15
+select _ALL from police ;10000184;sys;2023 05 27 10:15
+select _ALL from police ;10000185;sys;2023 05 27 10:17

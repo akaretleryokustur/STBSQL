@@ -1,0 +1,47 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL ALTER USER
+##################################################################
+# alter USER <username> IDENTIFIED BY <password>
+##
+##
+. ./lib
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`                #login olan user
+SYSUSER=`cat $SYS/dba.user|grep -i $LOGGEDUSER|wc -l`           #DBA user mı kontrolü
+if [ $SYSUSER = 0 ];then
+   echo "$USER user has no DBA permission."
+   exit 1
+else
+   if [[ $2 != "identified" &&  $2 != "IDENTIFIED" ]];then
+      echo "usage:  ALTER USER <username> IDENTIFIED BY <password>"
+      exit 1
+   fi
+   if [[ $3 != "by" &&  $3 != "BY" ]];then
+      echo "usage:  ALTER USER <username> IDENTIFIED BY <password>"
+      exit 1
+   fi
+   if [ -f $SYS/passwd.new ];then
+      rm $SYS/passwd.new
+   fi
+   count=`cat $SYS/passwd|cut -d ":" -f 1|grep -i $1|wc -l`
+   case $count in
+      0) echo "user does not exist"
+         exit 1
+   ;;
+   esac
+   for i in `cat $SYS/passwd`
+     do
+       user=`echo ${i}|cut -d ":" -f 1`
+       if [ $user = $1 ];then
+          echo $1":"$4 >> $SYS/passwd.new
+       else
+          echo $i >>  $SYS/passwd.new
+       fi
+     done
+   mv $SYS/passwd $SYS/passwd.old
+   cp $SYS/passwd.new $SYS/passwd
+   echo "User altered."
+fi
+exit 0

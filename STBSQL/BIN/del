@@ -1,0 +1,81 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files 
+##################################################################
+#  STBSQL DELETE
+##################################################################
+. ./lib
+##################################################################
+tabledb=$1.db
+LOGGEDUSER=`cat  $SYS/loggeduser.user.$SESSIONID`                           # Getting the user name who is already logged in
+TABLEUSER=`cat $CATALOG/$1.user|grep -i $LOGGEDUSER|wc -l`                  # login olan kullanıcının tabloya erişim hakkı var mı kontrolü
+########################################################################
+if [ $TABLEUSER != 0 ];then
+   if ! [ -f $CATALOG/$1.delim ];then                                          # Delimeter dosyası var mı kontrolu
+        echo "ERR:310 Delimeter file not found:$3.delim"
+        exit 1
+   fi
+   if ! [ -f $CATALOG/$1.desc ];then                                           # Description dosyası var mı kontrolu
+        echo "ERR:201 Description file not found"
+        exit 1
+   fi
+   if ! [ -f $TABLESPACE/$1.db ];then                                          # Data dosyası var mı kontrolu
+        echo "ERR: 902 Table $3.db not found"
+        exit 1
+   fi
+##################################################################
+del1=`cat $CATALOG/$1.delim`                                                # Table delimeter
+case "$del1" in
+       "WHITESPACE") del=" "
+       ;;
+       "TAB") del="	"
+       ;;
+       *) del=$del1
+       ;;
+esac
+table=$1                                                                    # Table adı
+cond=$3" "$4" "$5" "$6" "$7                                                 # WHERE condition
+tabledb=$table.db
+if [ ${2:-"~"} = "~" ];then
+   sayac=`cat $TABLESPACE/$tabledb|wc -l`
+   cp $TABLESPACE/$tabledb $TABLESPACE/$table.rollbackseg
+   rm $TABLESPACE/$tabledb
+   touch $TABLESPACE/$tabledb
+   echo $sayac " rows deleted."
+   exit 1
+fi
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'`  # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`                  # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          if [ ${sno:-"~" } = "~" ];then                                     # Where condition daki kolon adı repository de var mı kontrolü yapılıyor
+             echo "ERR:301 Relational identifier not found:$col"
+             exit 1
+          fi
+          awkcondcont=`echo $awkcond|tr '[:lower:]' '[:upper:]'`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/g'`
+          if [ $awkcondcont != $awkcond ];then                               # Where conditiondaki kolon adı repsoitoryde varsa flag 1 oluyor
+             relcont=1
+          fi
+         done
+       if [ $relcont = 0 ];then
+          echo "ERR:302 Relational identifier not found in:$cond"
+          exit 1
+       fi
+       if [ ${2:-"~"} = "WHERE" ] || [ ${2:-"~"} = "where" ];then
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if (!( $awkcond) )  print \$0;i++; }'" > _tmpdel1.$SESSIONID.sh # SELECT ifadesi çalışıyor
+       fi
+       cp $TABLESPACE/$table.db $TABLESPACE/$table.rollbackseg               # Rollback Segmente update oncesi dosya yaziliyor
+       sayac=`cat $TABLESPACE/$table.rollbackseg|wc -l`
+       . ./_tmpdel1.$SESSIONID.sh > $TABLESPACE/$table.db1                                    # Hazırlanan awk komutu shell script olarak run ediliyor
+       rm $TABLESPACE/$table.db
+       mv $TABLESPACE/$table.db1 $TABLESPACE/$table.db
+       sayac1=`cat $TABLESPACE/$table.db|wc -l`
+       echo $(( sayac - sayac1 )) " rows deleted."
+else 
+	echo "You have no access permission to $table"
+fi
+exit 0

@@ -1,0 +1,93 @@
+           (1)  ---->Usage      : Desc <tablename>
+                ---->Description: Show table description
+                
+           (2)  ---->Usage      : edit|EDIT <tablename>
+                ---->Description: Edit any text file using vi editor
+                
+           (3)  ---->Usage      : shutdown
+                ---->Description: Shutdown STBSQL database, when the shutdown is completed no any command can be run 
+                
+           (4)  ---->Usage      : startup
+                ---->Description: Startup STBSQL database
+               
+           (5)  ---->Usage      : quit|exit
+                ---->Description: Exit and disconnect from STBSQL database connection
+                
+           (6)  ---->Usage(1)   : SELECT <columns> FROM  <tablename> [WHERE <where clause>]
+                ---->Usage(2)   : SELECT <column1,column2,column3,....>,SUM/COUNT/MAX/MIN/AVG(<column>) FROM <tablename> [WHERE <where clause>] GROUP BY <column1.column2,column3,....>
+                ---->Description: Run an aggregation query for any column from any table
+                
+           (7)  ---->Usage      : DELETE <table name> [WHERE <where clause>]
+                ---->Descrition : Delete any rows from table
+                
+           (8)  ---->Usage      : Commit
+                ---->Description: Commit any transaction
+                
+           (9)  ---->Usage      : Rollback
+                ---->Description: Rollback any transaction
+                
+           (10) ---->Usage      : CREATE TABLE <tablename> ADD COLUMN <columnname>
+                ---->Description: Create a new table
+                
+           (11) ---->Usage      : DROP TABLE <table name>
+                ---->Description: Drop any table
+                
+           (12) ---->Usage      : ALTER TABLE <tablename> ADD COLUMN <columnname>
+                ---->Description: Alter table with adding a new column
+                
+           (13) ---->Usage      : UPDATE <table name> SET <column1=value1,column2=value2,column3=value2,....> [WHERE <column name>=<variables>]
+                ---->Description: Update any table
+                
+           (14) ---->Usage      : RENAME <tablename> TO <New table name>
+                ---->Description: Rename any table name
+                
+           (15) ---->Usage      : COPY <tablename> <New table name>
+                ---->Description: Copy table
+                
+           (16) ---->Usage      : col|colw|columnwitdh <column length> (default 15)
+                ---->Description: Arrange column witdh to any given value
+                
+           (17) ---->Usage      : backup <ALL|tables> <Full Path>
+                ---->Description: Backup all objects or any given table
+                
+           (18) ---->Usage      : spoolon (Create spool file]
+                ---->Description: Enable spool file
+                
+           (19) ---->Usage      : spooloff (Remove spool file]
+                ---->Description: Disable spool file and close it
+                
+           (20) ---->Usage      : CREATE USER <username> IDENTIFIED BY <password>
+                ---->Description: Create a new user and set a password
+                
+           (21) ---->Usage      : conn|connection|CON|CONNECTION) <user> <passwd>
+                ---->Description: Change the login user and connect
+                
+           (22) ---->Usage      : ALTER USER <username> IDENTIFIED BY <password>
+                ---->Description: Alter an existing user's password
+                
+           (23) ---->Usage      : GRANT ACCESS ON <tablename> TO <username>
+                ---->Description: Grant access permission on any table to any user
+                
+           (24) ---->Usage      : showuser
+                ---->Description: Show current user name and active session id
+           
+           (25) ---->Usage      : help
+                ---->Description: Show command help text
+
+           (26) ---->Usage      : copy|COPY|cp|CP) copy <tablename> to <tablename>
+                ---->Description: Copy any table with new table name
+
+           (27) ---->Usage      : rollback|ROLLBACK) rollback
+                ---->Description: Rollback the last transaction built by UPDATE or DELETE command
+
+           (28) ---->Usage      : REVOKE ACCESS FROM  <tablename> TO <username>
+                ---->Description: Revoke  access permission from  any table for any user
+
+           (29) ---->Usage      : dropuser <username>
+                ---->Description: Drop any any user
+
+           (30) ---->Usage      : showsession|SHOWSESSION
+                ---->Description: Show all active users and their session ids 
+
+           (31) ---->Usage      : INSERT INTO <table name> <column1,column2,...> VALUES <value1,value2,....> 
+                ---->Description: Insert row(s) any table 

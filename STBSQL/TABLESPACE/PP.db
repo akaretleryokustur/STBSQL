@@ -1,0 +1,36 @@
+Task.B;MODÜL A;Component B;Şifre İşlemleri;5;Proje Görevi;Faz2.2;;2023-05-02;2023-05-09;1;100;100;
+Task.B;MODÜL A;Component B;Şifre İşlemleri;1;Analiz Alt Görevi;Faz2.2;Analiz.2;2023-05-02;2023-05-02;2;100;101;
+Task.B;MODÜL A;Component B;Şifre İşlemleri;3;Geliştirme Alt Görevi;Faz2.2;Geliştirme.2;2023-05-03;2023-05-08;3;75;102;101
+Task.B;MODÜL A;Component B;Şifre İşlemleri;1;Test Alt Görevi;Faz2.2;Test.2;2023-05-09;2023-05-09;4;100;103;102
+Task.C;MODÜL B;Component A;Sipariş İşlemleri;3;Proje Görevi;Faz2.3;;2023-05-02;2023-05-08;1;100;104;
+Task.C;MODÜL B;Component A;Sipariş İşlemleri;1;Analiz Alt Görevi;Faz2.3;Analiz.3;2023-05-02;2023-05-03;2;50;105;
+Task.C;MODÜL B;Component A;Sipariş İşlemleri;1;Geliştirme Alt Görevi;Faz2.3;Geliştirme.3;2023-05-04;2023-05-05;3;50;106;105
+Task.C;MODÜL B;Component A;Sipariş İşlemleri;1;Test Alt Görevi;Faz2.3;Test.3;2023-05-08;2023-05-08;4;100;107;106
+Task.D;MODÜL A;Component C;Adres İşlemleri;9;Proje Görevi;Faz2.2;;2023-05-03;2023-05-16;1;100;108;
+Task.D;MODÜL A;Component C;Adres İşlemleri;2;Analiz Alt Görevi;Faz2.2;Analiz.1;2023-05-03;2023-05-04;2;100;109;
+Task.D;MODÜL A;Component C;Adres İşlemleri;5;Geliştirme Alt Görevi;Faz2.2;Geliştirme.1;2023-05-08;2023-05-12;3;100;110;109
+Task.D;MODÜL A;Component C;Adres İşlemleri;2;Test Alt Görevi;Faz2.2;Test.1;2023-05-15;2023-05-16;4;100;111;110
+Task.E;MODÜL C;Component A;Teklif İşlemleri;9;Proje Görevi;Faz2.2;;2023-05-03;2023-05-17;1;100;112;
+Task.E;MODÜL C;Component A;Teklif İşlemleri;2;Analiz Alt Görevi;Faz2.2;Analiz.2;2023-05-03;2023-05-04;2;100;113;
+Task.E;MODÜL C;Component A;Teklif İşlemleri;5;Geliştirme Alt Görevi;Faz2.2;Geliştirme.2;2023-05-09;2023-05-15;3;100;114;113
+Task.E;MODÜL C;Component A;Teklif İşlemleri;2;Test Alt Görevi;Faz2.2;Test.2;2023-05-16;2023-05-17;4;100;115;114
+Task.F;MODÜL C;Component B;Fatura İşlemleri;7;Proje Görevi;Faz2.2;;2023-05-04;2023-05-12;1;100;116;
+Task.F;MODÜL C;Component B;Fatura İşlemleri;2;Analiz Alt Görevi;Faz2.2;Analiz.3;2023-05-04;2023-05-05;2;100;117;
+Task.F;MODÜL C;Component B;Fatura İşlemleri;3;Geliştirme Alt Görevi;Faz2.2;Geliştirme.3;2023-05-08;2023-05-10;3;100;118;117
+Task.F;MODÜL C;Component B;Fatura İşlemleri;2;Test Alt Görevi;Faz2.2;Test.3;2023-05-11;2023-05-12;4;100;119;118
+Task.G;MODÜL C;Component C;Raporlamalar;7;Proje Görevi;Faz2.2;;2023-05-05;2023-06-16;1;100;120;
+Task.G;MODÜL C;Component C;Raporlamalar;1;Analiz Alt Görevi;Faz2.2;Analiz.1;2023-05-05;2023-05-10;2;25;121;
+Task.G;MODÜL C;Component C;Raporlamalar;5;Geliştirme Alt Görevi;Faz2.2;Geliştirme.1;2023-05-15;2023-06-12;3;25;122;121
+Task.G;MODÜL C;Component C;Raporlamalar;1;Test Alt Görevi;Faz2.2;Test.1;2023-06-13;2023-06-16;4;25;123;122
+Task.H;MODÜL D;Component A;Diğer İşlemler;9;Proje Görevi;Faz2.2;;2023-05-05;2023-05-17;1;100;124;
+Task.H;MODÜL D;Component A;Diğer İşlemler;4;Analiz Alt Görevi;Faz2.2;Analiz.2;2023-05-05;2023-05-10;2;100;125;
+Task.H;MODÜL D;Component A;Diğer İşlemler;2;Geliştirme Alt Görevi;Faz2.2;Geliştirme.3;2023-05-11;2023-05-12;3;100;126;125
+Task.H;MODÜL D;Component A;Diğer İşlemler;3;Test Alt Görevi;Faz2.2;Test.3;2023-05-15;2023-05-17;4;100;127;126
+Task.I;MODÜL D;Component B;Diğer İşlemleri1;7;Proje Görevi;Faz2.2;;2023-05-11;2023-05-23;1;100;128;
+Task.I;MODÜL D;Component B;Diğer İşlemleri1;2;Analiz Alt Görevi;Faz2.2;Analiz.2;2023-05-11;2023-05-12;2;100;129;
+Task.I;MODÜL D;Component B;Diğer İşlemleri1;2;Geliştirme Alt Görevi;Faz2.2;Geliştirme.3;2023-05-15;2023-05-16;3;100;130;129
+Task.I;MODÜL D;Component B;Diğer İşlemleri1;3;Test Alt Görevi;Faz2.2;Test.3;2023-05-18;2023-05-23;4;100;131;130
+Task.A;MODÜL A;Component A;Kullanıcı İşlemleri;5;Proje Görevi;Faz2.2;;2023-05-02;2023-05-08;1;100;132;
+Task.A;MODÜL A;Component A;Kullanıcı İşlemleri;1;Analiz Alt Görevi;Faz2.2;Analiz.1;2023-05-02;2023-05-02;2;100;133;
+Task.A;MODÜL A;Component A;Kullanıcı İşlemleri;3;Geliştirme Alt Görevi;Faz2.2;Geliştirme.1;2023-05-03;2023-05-05;3;100;134;133
+Task.A;MODÜL A;Component A;Kullanıcı İşlemleri;1;Test Alt Görevi;Faz2.2;Test.1;2023-05-08;2023-05-08;4;100;135;134

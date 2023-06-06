@@ -1,0 +1,45 @@
+##################################################################
+#  ShellQL Application by Cenk Kurt Jan 2014
+#  Description:ShellQL is a simple SQL interface for flat files 
+##################################################################
+#  ShellQL
+##################################################################
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+##################################################################
+# CREATE TABLE <tablename> <column name,.....> DELIMETER <delimeter>
+#
+cols=$3                                                               # Kolon adları
+table=$2                                                              # Table adı
+tabledb=$table.db
+delim=$5
+####################################################################
+cd $BIN
+./builtrepository                                                     # ShellQL repository oluşturuluyor
+         if [ -f $TABLESPACE/$table.db ];then
+            echo "Table "$table" already exist."
+            exit
+         fi
+         if [ -f $CATALOG/$table.desc ];then
+            rm $CATALOG/$table.desc
+         fi
+         touch $TABLESPACE/$tabledb 
+         numcols=`echo $cols|awk -F "," '{print NF;}'`
+         j=1
+         while [[ j -le $numcols ]] 
+          do
+           col=`echo ${cols}|sed -e 's/(//g'|sed -e 's/)//g'|awk -v a=$j -F "," '{print  $a;}'`
+           colup=`echo $col|tr '[:lower:]' '[:upper:]'`                          # Kolon buyuk harfe cevriliyor
+           sno=$j
+           echo $sno":"$colup >> $CATALOG/$table.desc
+           j=$(( $j + 1 ))
+        done
+        if [ ${delim:-"~"} = "~" ];then
+           echo "Delimeter is not set"
+           exit
+        else 
+           echo $delim|sed -e 's/"//g' > $CATALOG/$table.delim
+        fi
+echo "Table "$table" created."
+exit

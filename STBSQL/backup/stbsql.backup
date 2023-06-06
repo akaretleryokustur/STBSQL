@@ -1,0 +1,215 @@
+################################################################
+# Description :
+#     STBSQL is the Simple Text Base SQL interface 
+#     for querying and data manuplating on delimited text files.
+################################################################
+# History:
+# Date       Desc                    Edited by 
+# ---------- ----------------------- -----------------
+# 02/02/2014 First beta version iss. Cenk Kurt
+# 06/02/2014 Enhancements            Cenk Kurt
+# 09/02/2014 Delete statement        Cenk Kurt
+# 11/02/2014 Rollback and Commit     Cenk Kurt
+# 12/02/2014 Update statement        Cenk Kurt
+# 16/02/2014 Insert statement        Cenk Kurt
+# 17/02/2014 Create statement        Cenk Kurt
+################################################################ 
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+SYS=`cat /home/bahisek/SYS/conf|grep "SYS"|awk -F "=" '{print $2}'`
+##################################################################
+cd $BIN
+./builtrepository
+printf  "%s Connecting Simple Text Base SQL Interface"
+if ! [ -f $SYS/system ];then
+     echo
+     echo "STBSQL database is not up and running."
+else
+     for i in `cat $SYS/system|awk '{ if ($1 != "#") print $1;}'` # Check the system objects exist
+      do
+        if [ -f $BIN/$i ];then
+           printf "%s."
+           sleep 1
+        else
+           echo "Couldn't connect to STBSQL database..."
+           exit 1
+        fi
+      done
+fi
+echo ""
+while true; do
+    echo -n "STBSQL>";read _ALL
+    p1=`echo $_ALL|awk -F " " '{print $1;}'`
+    p2=`echo $_ALL|awk -F " " '{print $2;}'`
+    p3=`echo $_ALL|awk -F " " '{print $3;}'`
+    p4=`echo $_ALL|awk -F " " '{print $4;}'`
+    p5=`echo $_ALL|awk -F " " '{print $5;}'`
+    p6=`echo $_ALL|awk -F " " '{print $6;}'`
+    p7=`echo $_ALL|awk -F " " '{print $7;}'`
+    p8=`echo $_ALL|awk -F " " '{print $8;}'`
+    p9=`echo $_ALL|awk -F " " '{print $9;}'`
+    echo $_ALL >> stbsql.hist
+    case ${p1:-"BOS"} in
+     hist) 
+         cat stbsql.hist|tail -n 20
+     ;;
+     shutdown)                                               # SHUTDOWN 
+               mv $SYS/system $SYS/_system
+               echo "STBSQL database closed"
+               sleep 1
+     ;;
+     startup) if ! [ -f $SYS/_system ];then                  # STARTUP 
+                   mv $SYS/system.reco $SYS/_system
+              fi 
+              mv $SYS/_system $SYS/system
+              for i in `cat $SYS/system|awk '{ if ( substr($1,1,1) != "#" ) print $1;}'`
+               do
+                  if [ -f $i ];then
+                     printf "%s ."
+                     sleep 1
+                  else
+                     echo "Couldn't connect to STBSQL database..."
+                     echo "Please check the files into system file."  
+                     exit 1
+                  fi
+               done
+               echo "STBSQL database opened." 
+     ;;
+     exit|quit) 
+                ./cleanup                                    # EXIT 
+                echo "Disconnecting STBSQL..."
+                sleep 2
+                echo "Disconnected."
+                exit
+     ;;
+     select|SELECT|sel)                                       # SELECT
+                        if [ -f $SYS/system ];then
+                           ./sel $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9
+                        else
+                           echo "No available connection"
+                        fi
+     ;;
+     rename|RENAME|ren)                                       # RENAME
+       mv $TABLESPACE/$p2.db $TABLESPACE/$p4.db
+       mv $CATALOG/$p2.desc $CATALOG/$p4.desc
+       mv $CATALOG/$p2.delim $CATALOG/$p4.delim
+       echo "Processed."
+     ;;
+     copy|COPY|cp|CP)                                         # COPY 
+       cp $TABLESPACE/$p2.db $TABLESPACE/$p3.db
+       cp $CATALOG/$p2.desc $CATALOG/$p3.desc
+       cp $CATALOG/$p2.delim $CATALOG/$p3.delim
+       echo "Copied."
+     ;;
+     drop|DROP)                                               # DROP
+       rm $TABLESPACE/$p3.db
+       rm $CATALOG/$p3.desc
+       rm $CATALOG/$p3.delim
+       echo "Table $p3 dropped."
+     ;; 
+     delete|DELETE|del)                                       # DELETE 
+     ./del $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9
+     ;;
+     update|UPDATE|upd|UPD)                                   # UPDATE 
+     ./update $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9
+     ;;
+     ins|insert|INSERT|INS)
+     ./ins $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9                    # INSERT
+     ;;
+     create|CREATE)
+     ./create $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9                 # CREATE
+     ;;
+     commit|COMMIT)                                           # COMMIT
+     for i in `ls $TABLESPACE/*.rollbackseg` 
+      do
+        tablename1=`echo $i|awk -F "." '{print $1".db"}'`
+        rm $i 
+      done
+     echo "commited."
+     ;;  
+     rollback|ROLLBACK)                                       # ROLLBACK
+     for i in `ls $TABLESPACE/*.rollbackseg` 
+      do
+        tablename1=`echo $i|awk -F "." '{print $1".db"}'`
+        cp $i $tablename1
+        rm -rf $i 
+      done
+     echo "rollback complete." 
+     ;;
+     desc|DESC)                                               # DESC
+     ./desc $p2
+     ;;
+     help|HELP)                                               # HELP
+                echo "--------------->Desc <tablename>"
+                echo "----------------------->Description: Show table description"
+                echo
+                echo "--------------->quit|exit"
+                echo "----------------------->Description: Exit and disconnect from STBSQL database connection"
+                echo
+                echo "--------------->Select <columns> From <tablename> [WHERE <where clause> ]"
+                echo "----------------------->Description: Run a query for any column from any table with filtering"
+                echo
+                echo "--------------->Delete <table name> [WHERE <where clause>]"
+                echo "----------------------->Descrition: Delete any rows from table"
+                echo
+                echo "--------------->Commit"
+                echo "----------------------->Description: Commit any transaction"
+                echo 
+                echo "---------------->Rollback"
+                echo "----------------------->Description: Rollback any transaction"
+                echo  
+                echo "---------------->Drop Table <table name>"
+                echo "----------------------->Drop any table"
+                echo 
+                echo "---------------->Update Table <table name> SET <column name>=<variables> [WHERE <column name>=<variables>]"
+                echo "----------------------->Update any table"
+                echo 
+                echo "---------------->Rename <tablename> To <New table name>"
+                echo "----------------------->Rename any table name"
+                echo 
+                echo "---------------->Copy <tablename> <New table name>"
+                echo "----------------------->Copy table"
+                echo
+                echo "--------------->columnwitdh <column length> (default 15)"
+                echo "----------------------->Description: Arrange column witdh to any given value"
+                echo
+                echo "--------------->backup <ALL|tables> <Full Path>"
+                echo "----------------------->Description: Backup all objects or any given table"
+                echo
+                echo "--------------->spoolon (Create spool file]"
+                echo "----------------------->Description: Enable spool file" 
+                echo
+                echo "--------------->spooloff (Remove spool file]"
+                echo "----------------------->Description: Disable spool file and close it" 
+      ;;
+      col|colw|columnwitdh)                                               # COLUMNWITDH
+      echo ${p2:-15} > $BIN/columnwitdh
+      ;;
+      backup|BACKUP)                                                      # BACKUP 
+                      case $p2 in
+                           ALL|all) echo "Full database is being copied."
+                                    cp -f *.* $p3/.
+                           ;;
+                           tables) 
+                                    echo "Tables are being copied."
+                                    cp -f *.db $p3/.
+                                    cp -f *.delim $p3/.
+                                    cp -f *.desc $p3/.
+                            ;;
+                      esac
+      ;;
+      spoolon)                                                            # SPOOL ON 
+               usersplfile=/tmp/spool_$RANDOM.txt
+               echo "Spool file name : $usersplfile"
+               echo $usersplfile > spoolfile
+      ;;
+      spooloff)                                                           # SPOOL OFF 
+               if [ -f spoolfile ];then
+                   rm spoolfile
+               fi
+      ;;
+      *) echo
+      ;;
+   esac
+done

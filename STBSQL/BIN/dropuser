@@ -1,0 +1,38 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL DROPUSER 
+##################################################################
+#DROPUSER <username> 
+##
+##
+. ./lib
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`                #login olan user
+SYSUSER=`cat $SYS/dba.user|grep -i $LOGGEDUSER|wc -l`           #DBA user
+if [ $SYSUSER = 0 ];then
+   echo "$USER user has no DBA permission."
+   exit 1
+else
+if [[ `cat $SYS/passwd|grep -i $1|wc -l` = 0 ]];then
+   echo "User "$1" not found"
+   exit 1
+fi
+count=`cat $CATALOG/*.user|grep -i $1|wc -l`
+if [  $count = 0 ];then 
+   cat $SYS/passwd|grep -v $1 > $SYS/passwd.$SESSIONID
+   rm $SYS/passwd
+   mv $SYS/passwd.$SESSIONID $SYS/passwd
+   echo "User droped."
+else
+   echo "Before drop the user revoke user access from tables listed below;"
+   for i in `ls $CATALOG/*.user`                                  # DROP edilecek user tablolara erişim hakkı varsaOP edilmeden önce tek tek tablolardan revoke edilmeli
+       do 
+        cnt=`cat $i|grep -i $1|wc -l`
+        if [ $cnt != 0 ];then
+           echo $i
+        fi
+       done
+fi 
+fi
+exit 0

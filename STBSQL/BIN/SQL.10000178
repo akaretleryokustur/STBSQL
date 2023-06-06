@@ -1,0 +1,1 @@
+a.id,a.ad,b.adres from police inner join b on a.id=b.id         

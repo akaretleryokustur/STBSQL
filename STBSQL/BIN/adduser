@@ -1,0 +1,31 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL   CREATE USER
+##################################################################
+. ./lib
+##################################################################
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`               #login olan user
+SYSUSER=`cat $SYS/dba.user|grep -i $LOGGEDUSER|wc -l`           #DBA user
+if [ $SYSUSER = 0 ];then
+   echo "$USER user has no DBA permission."
+   exit 1
+else
+if [[ $2 != "identified" &&  $2 != "IDENTIFIED" ]];then
+   echo "usage:  CREATE USER <username> IDENTIFIED BY <password>"
+   exit 1
+fi
+if [[ $3 != "by" &&  $3 != "BY" ]];then
+   echo "usage:  CREATE USER <username> IDENTIFIED BY <password>"
+   exit 1
+fi
+count=`cat $SYS/passwd|cut -d ":" -f 1|grep -i $1|wc -l`
+if [ $count = 0 ];then
+   echo $1":"$4 >> $SYS/passwd
+   echo "User created."
+else
+   echo "User $1 is already exist"
+fi 
+fi
+exit 0

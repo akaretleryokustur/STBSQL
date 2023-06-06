@@ -1,0 +1,89 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files 
+##################################################################
+#  STBSQL INSERT
+##################################################################
+. ./lib
+##################################################################
+## insert into test col1,col2,col3,... values <value1>,<value2>,.....
+##
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`                                  # Getting the user name who is already logged in
+TABLEUSER=`cat $CATALOG/$2.user |grep -i $LOGGEDUSER|wc -l`
+tabledb=$2.db
+#################################################################################
+if [ $TABLEUSER != 0 ];then
+   if ! [ -f $CATALOG/$2.delim ];then                                   # Delimeter dosyası var mı kontrolu
+        echo "ERR:310 Delimeter file not found:$3.delim"
+        exit 1
+   fi
+   if ! [ -f $CATALOG/$2.desc ];then                                    # Description dosyası var mı kontrolu
+        echo "ERR:201 Description file not found"
+        exit 1
+   fi
+   if ! [ -f $TABLESPACE/$2.db ];then                                   # Data dosyası var mı kontrolu
+        echo "ERR: 902 Table $3.db not found"
+        exit 1
+   fi
+##################################################################
+del1=`cat $CATALOG/$2.delim`                                                   # Table delimeter
+case "$del1" in
+       "WHITESPACE") del=" "
+       ;;
+       "TAB") del="	"
+       ;;
+       *) del=$del1
+       ;;
+esac
+cols=$3                                                               # Kolon adları
+table=$2                                                              # Table adı
+values=$5                                                             # INSERT values 
+tabledb=$table.db
+delim=`cat $CATALOG/$table.delim`
+####################################################################
+cd $BIN
+./builtrepository                                                     # STBSQL repository oluşturuluyor
+         numcol=$(cat $CATALOG/$table.desc|wc -l) 
+         if [ -f $TABLESPACE/$table.tmp ];then
+            rm $TABLESPACE/$table.tmp
+         fi
+         touch $TABLESPACE/$table.tmp 
+         j=1
+         inscols=$cols
+         insvals=""
+         while [[ j -le $numcol ]] 
+          do
+           col=`echo ${cols}|sed -e 's/(//g'|sed -e 's/)//g'|awk -v a=$j -F "," '{print  $a;}'`
+           val=`echo ${values}|awk -v a=$j -F "," '{print  $a;}'`
+           if [ ${col:-"~"} != "~" ];then
+              flag=0
+              for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`     # Select edilecek kolon description dosyasında var mı kontrolu yapılıyor
+               do
+                 colup=`echo $col|tr '[:lower:]' '[:upper:]'`         # Kolon buyuk harfe cevriliyor
+                 repup=`echo $i|tr '[:lower:]' '[:upper:]'`           # Repository kolon buyuk harfe cevriliyor
+                 if [ $colup = $repup ];then
+                    flag=1
+                 fi 
+               done
+              if  [ $flag != 1 ];then                                 # Kolon repository de bulundu mu kontrolu
+                  echo "ERR: 1100 Identifier not found:$colup in table:$table"
+                  exit 1
+              fi
+              sno=`cat $CATALOG/$table.desc|grep -i ":"${col:-"~"}|awk -F ":" '{print $1}'`  # kolonun text dosyasındaki sıra numarası bulunuyor
+              inscols=`echo $inscols|sed 's/'$col'/$'$sno'/g'`
+              echo $sno"|"$val >> $TABLESPACE/$table.tmp
+          fi
+          j=$(( $j + 1 ))
+        done
+cp $TABLESPACE/$table.db $TABLESPACE/$table.rollbackseg
+for i in `cat $TABLESPACE/$table.tmp|sort -u`
+   do
+     val=`echo $i|awk -F "|" '{print $2;}'`
+     insvals=$insvals$val$delim
+   done
+echo $insvals|sed -e 's/"//g' >> $TABLESPACE/$table.db
+echo "1 row inserted."
+else 
+   echo "You have no access permission to $table"
+fi
+exit 0

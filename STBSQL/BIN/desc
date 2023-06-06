@@ -1,0 +1,14 @@
+###################################################################
+. ./lib
+##################################################################
+if [ -f $TABLESPACE/$1.db ];then
+   echo "S COLUMN"
+   echo "N NAME"
+   echo "- ------"
+   cat $CATALOG/$1.desc
+   echo "Table Delimiter is;"
+   cat $CATALOG/$1.delim
+else
+   echo "$1 table not found"
+fi
+exit 0

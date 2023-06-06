@@ -1,0 +1,42 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL ALTERTABLE
+##################################################################
+# alter TABLE <tablename> ADD COLUMN <columnname>
+##
+##
+. ./lib
+LOGGEDUSER=`cat $SYS/loggeduser.useri.$SESSIONID`
+TABLEUSER=`cat $CATALOG/$1.user|grep -i $LOGGEDUSER|wc -l`
+if [ $TABLEUSER = 0 ];then
+echo "$LOGGEDUSER is not the owner of the table $1"
+exit 1
+else
+if [[ $2 != "add" &&  $2 != "ADD" ]];then
+echo "usage:  ALTER TABLE <tablename> ADD COLUMN <column>"
+exit 1
+fi
+if [[ $3 != "column" &&  $3 != "COLUMN" ]];then
+echo "usage:  ALTER TABLE <tablename> ADD COLUMN <column>"
+exit 1
+fi
+columnname=`echo $4|tr '[:lower:]' '[:upper:]'`
+if [ -f $CATALOG/$1.desc ];then
+count=`cat $CATALOG/$1.desc|wc -l`
+count=$(( count + 1 ))
+check=`cat $CATALOG/$1.desc|cut -d ":" -f 2|grep -i $columnname|wc -l`
+if [ $check != 0 ];then
+echo "Column $columnname is already exist."
+exit 1
+else
+echo $count":"$columnname >>  $CATALOG/$1.desc
+echo "Table altered."
+fi
+else
+echo "$1 table does not exist."
+exit 1
+fi
+fi
+exit 0

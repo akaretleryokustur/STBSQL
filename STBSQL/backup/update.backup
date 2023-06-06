@@ -1,0 +1,104 @@
+##################################################################
+#  ShellQL Application by Cenk Kurt Jan 2014
+#  Description:ShellQL is a simple SQL interface for flat files 
+##################################################################
+#  ShellQL
+##################################################################
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+##################################################################
+
+if ! [ -f $CATALOG/$1.delim ];then                                                          # Delimeter dosyası var mı kontrolu
+     echo "ERR:310 Delimeter file not found:$3.delim"
+     exit 1
+fi
+if ! [ -f $CATALOG/$1.desc ];then                                                           # Description dosyası var mı kontrolu
+     echo "ERR:201 Description file not found"
+     exit 1
+fi
+if ! [ -f $TABLESPACE/$1.db ];then                                                             # Data dosyası var mı kontrolu
+     echo "ERR: 902 Table $3.db not found"
+     exit 1
+fi
+##################################################################
+del1=`cat $CATALOG/$1.delim`                                                                # Table delimeter
+case "$del1" in
+       "WHITESPACE") del=" "
+       ;;
+       "TAB") del="	"
+       ;;
+       *) del=$del1
+       ;;
+esac
+table=$1                                                                            # Table adı
+cols=$3
+cond=$5" "$6" "$7" "$8" "$9                                                         # WHERE condition
+tabledb=$table.db
+# Update edilecek kolonlar bulunuyor
+        numcol=$(cat $CATALOG/$table.desc|wc -l)
+         j=1
+         while [[ j -le $numcol ]]
+          do
+           col=`echo ${cols}|awk -v a=$j -F "," '{print  $a;}'|awk -F "=" '{print $1}'`
+           if [ ${col:-"~"} != "~" ];then
+              flag=0
+              for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`                            # Select edilecek kolon description dosyasında var mı kontrolu yapılıyor
+               do
+                 colup=`echo $col|tr '[:lower:]' '[:upper:]'`                       # Kolon buyuk harfe cevriliyor
+                 repup=`echo $i|tr '[:lower:]' '[:upper:]'`                         # Repository kolon buyuk harfe cevriliyor
+                 if [ $colup = $repup ];then
+                    flag=1
+                 fi
+               done
+              if  [ $flag != 1 ];then                                               # Kolon repository de bulundu mu kontrolu
+                  echo "ERR: 1100 Identifier not found:$colup in table:$table"
+                  exit 1
+              fi
+              sno=`cat $CATALOG/$table.desc|grep -i ":"${col:-"~"}|awk -F ":" '{print $1}'`  # kolonun text dosyasındaki sıra numarası bulunuyor
+              updstmt=`echo $cols|sed -e 's/$col/$sno/g'`
+          fi
+          j=$(( $j + 1 ))
+        done
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'` # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        updcols=$cols
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`                                  # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          if [ ${sno:-"~" } = "~" ];then                                            # Where condition daki kolon adı repository de var mı kontrolü yapılıyor
+             echo "ERR:301 Relational identifier not found:$col"
+             exit 1
+          fi
+          awkcondcont=`echo $awkcond|tr '[:lower:]' '[:upper:]'`
+          updcols=`echo $updcols|tr '[:lower:]' '[:upper:]'`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/g'`
+          updcols=`echo $updcols|sed 's/'$col'/$'$sno'/g'|sed 's/,/;/g'`
+          if [ $awkcondcont != $awkcond ];then                                      # Where conditiondaki kolon adı repsoitoryde varsa flag 1 oluyor
+             relcont=1
+          fi
+         done
+       if [ $relcont = 0 ];then
+          echo "ERR:302 Relational identifier not found in:$cond"
+          exit 1
+       fi
+       row=""
+       for i in `cat $CATALOG/$table.desc|cut -d ":" -f 1`                                  # where condition daki kolonlar bulunuyor
+        do
+         row=`echo $row"$"$i\"$del\"` 
+        done
+       if [ ${4:-"~"} = "WHERE" ] || [ ${4:-"~"} = "where" ];then
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond )  { $updcols; } print $row; }'" > u1.sh # Once WHERE cond calistiriliyor
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond )  i++; } END{print i;}'" > u2.sh   # Once WHERE cond calistiriliyor
+          sayac=`. ./u2.sh`
+       else
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ $updcols; print $\0 }'" > u1.sh  # WHERE cond  yok tum dosya icin update yapilacak
+       fi
+       cp $TABLESPACE/$table.db $TABLESPACE/$table.rollbackseg                                              # Rollback Segmente update oncesi dosya yaziliyor
+       . ./u1.sh > $TABLESPACE/$table.db1                                                       # Hazırlanan awk komutu shell script olarak run ediliyor
+       rm $TABLESPACE/$table.db
+       mv $TABLESPACE/$table.db1 $TABLESPACE/$table.db
+       echo $sayac" rows updated."
+exit 

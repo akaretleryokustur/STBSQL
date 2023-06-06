@@ -1,0 +1,17 @@
+1:TaskID
+2:Module
+3:Component
+4:Desciption
+5:TotalEffort
+6:AnalyzeEffort
+7:DevEffort
+8:TestEffort
+9:Phase
+10:AnalyzeResource
+11:DevResource
+12:TestResource
+13:AnalyzeUtilizationRatio
+14:DevelopmentUtilizationRatio
+15:TestUtilizationRatio
+16:PredecessorTaskName
+

@@ -1,0 +1,33 @@
+# Cleanup working file# Cleanup working files
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+##################################################################
+
+if [ -f $BIN/s1.sh ];then
+   rm $BIN/s1.sh
+fi
+if [ -f $BIN/d1.sh ];then
+   rm $BIN/d1.sh
+fi
+if [ -f $BIN/u1.sh ];then
+   rm $BIN/u1.sh
+fi
+if [ -f $BIN/u2.sh ];then
+   rm $BIN/u2.sh
+fi
+if [ -f $CATALOG/tables.1 ];then
+   rm $CATALOG/tables.1
+fi
+if [ -f $CATALOG/tables.2 ];then
+   rm $CATALOG/tables.2
+fi
+if [ -f $CATALOG/tables.3 ];then
+   rm $CATALOG/tables.3
+fi
+if [ -f $CATALOG/tables.4 ];then
+   rm $CATALOG/tables.4
+fi
+if [ -f $BIN/spoolfile ];then
+   rm $BIN/spoolfile
+fi

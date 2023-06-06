@@ -1,0 +1,4 @@
+select branskod,dovkod,sum(anapara) from police group by branskod,dovkod
+select distinct(dovkod) from police
+select distinct(dovkod) from police group by dovkod
+select distinct(branskod) from police group by branskod

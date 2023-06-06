@@ -1,0 +1,310 @@
+#!/bin/ksh
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files 
+##################################################################
+#  STBSQL SELECT ..... FROM .... WHERE ..... GROUP BY ...
+# stmt is coming from stbsql script as EXPORT which includes whole SQL statement
+##################################################################
+. ./lib
+##################################################################
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`                               # Getting the user name who is already logged in
+if ! [ -f $CATALOG/$3.delim ];then                                             # Delimeter dosyası var mı kontrolu
+     echo "ERR:310 Delimeter file not found:$3.delim"
+     exit 1
+fi
+if ! [ -f $CATALOG/$3.desc ];then                                              # Description dosyası var mı kontrolu
+     echo "ERR:201 Description file not found"
+     exit 1
+fi
+if ! [ -f $TABLESPACE/$3.db ];then                                             # Data dosyası var mı kontrolu
+     echo "ERR: 902 Table $3.db not found"
+     exit 1
+fi
+##################################################################
+del1=`cat $CATALOG/$3.delim`                                                   # Table delimeter
+case "$del1" in
+       "WHITESPACE") del=" "
+       ;;
+       "TAB") del="	"
+       ;;
+       *) del=$del1
+       ;;
+esac
+cols=$1                                                               # Kolon adları
+table=$3                                                              # Table adı
+cond=$5" "$6" "$7" "$8" "$9                                           # WHERE condition
+tabledb=$table.db
+colw=`cat $BIN/columnwitdh`
+dashbase="----------------------------------------------------------------------------------------------------------------------------------------------"
+headbase=".............................................................................................................................................."
+############### Finding table owner from catalog ################################
+TABLEUSER=`cat $CATALOG/$3.user|grep -i $LOGGEDUSER|wc -l` 
+#################################################################################
+####################################################################
+if [ $TABLEUSER != 0  ];then
+cd $BIN
+if [ $cols = "_ALL" ];then                                            # select * from 
+         numcol=$(cat $CATALOG/$table.desc|wc -l) 
+         j=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`           # Tum kolonlar seciliyor 
+         do
+           j=$(( $j + 1 ))
+           if [ $j -eq $numcol ];then
+              allcol=$allcol$i
+           else
+              allcol=$allcol$i","
+           fi
+         done
+         cols=$allcol
+fi 
+case "$cols" in                                                       # Ana routini başlangıcı
+     "count(*)"|"COUNT(*)"|"COUNT(_ALL)"|"count(_ALL)" )                                         # Tek kolon COUNT(*) routini  
+        echo "COUNT(*)"
+        echo "--------"
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'`  # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`           # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          if [ ${sno:-"~" } = "~" ];then                              # Where condition daki kolon adı repository de var mı kontrolü yapılıyor
+             echo "ERR:301 Relational identifier not found:$col"
+             exit 1
+          fi
+          awkcondcont=`echo $awkcond`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/gI'`
+         done
+         if [ ${4:-"~"} = "WHERE" ] || [ ${4:-"~"} = "where" ];then
+            echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond ) { i++; } } END{print i \" rows selected\";}'" > _tmpsel.$SESSIONID.sh # SELECT ifadesi çalışıyor
+         else
+            echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" 'BEGIN { OFS=\" \" } {  } END{print NR \" rows selected\";}'" > _tmpsel.$SESSIONID.sh # SELECT ifadesi çalışıyor
+         fi
+      ;;
+      *) 
+       if [ ${cols:0:4} = "SUM(" ] || [ ${cols:0:4} = "sum(" ];then          # Tek kolon SUM routini
+         colstart=`echo $cols|awk -F "(" ' { print length($1) + 1}'`         # SUM içindeki kolonun adının başlangıç pozisyonunu bulmak için
+         colend=`echo $cols|awk -F ")" ' { print length($1) }'`              # SUM içindeki kolonun adının bitiş pozisyonunu bulmak için
+         coldiff=$(( colend - colstart ))                                    # SUM alınacak kolonun adının uzunluğu bulunuyor
+         sumcol=`echo ${cols:$colstart:$coldiff}|tr '[:lower:]' '[:upper:]'` # SUM alınacak kolonun adı bulunup büyük harfe çevriliyor
+         colpos=`cat $CATALOG/$table.desc|grep -i $sumcol|cut -d ":" -f 1`   # DESCRIPTION dosyasından kolonun sıra numarası bulunuyor
+         tabdel=`cat $CATALOG/$table.delim`                                  # Tablonun delimeterı bulunuyor
+         for i in  `cat $TABLESPACE/$table.db|cut -d "${tabdel}" -f $colpos`
+          do
+            colsum=$(( colsum + $i ))
+          done
+          echo "$cols"
+          echo "-------------------"
+          echo $colsum
+         echo "echo \"1 rows selected\"" > _tmpsel.$SESSIONID.sh
+       else
+        chk=`echo $stmt|grep -e "GROUP BY" -e "group by"|wc -l`
+        if [ $chk -eq 1 ];then                                        # SELECT colum1,colum2,...,[COUNT/SUM/MAX/MIN/AVG](column3,column4) FROM tablename GROUP BY column1,column2######################
+         numcol=$(cat $CATALOG/$table.desc|wc -l)          
+         j=1
+         while [[ j -le $numcol ]] 
+          do
+           col=`echo ${cols}|awk -v a=$j -F "," '{print  $a;}'`         # Kolon isimleri bulunup ayrıştırılıyor
+           AGGCHK=`echo $stmt|grep -e "SUM(" -e "sum("|wc -l`           # işlem SUM  işlemi mi kontrolü    1
+           if [ ${AGGCHK:-0} = 0 ];then
+              AGGCHK=`echo $stmt|grep -e "COUNT(" -e "count("|wc -l`    # işlem COUN işlemi mi kontrolü    2
+           if [ ${AGGCHK:-0} = 1 ];then AGGCHK=2;fi
+           fi
+           if [ ${AGGCHK:-0} = 0 ];then
+              AGGCHK=`echo $stmt|grep -e "MAX(" -e "max("|wc -l`        # işlem MAX  işlemi mi kontrolüA   3
+           if [ ${AGGCHK:-0} = 1 ];then AGGCHK=3;fi
+           fi
+           if [ ${AGGCHK:-0} = 0 ];then
+              AGGCHK=`echo $stmt|grep -e "MIN(" -e "min("|wc -l`        # işlem MIN  işlemi mi kontrolü    4
+           if [ ${AGGCHK:-0} = 1 ];then AGGCHK=4;fi
+           fi
+           if [ ${AGGCHK:-0} = 0 ];then
+              AGGCHK=`echo $stmt|grep -e "AVG(" -e "avg("|wc -l`        # işlem AVG  işlemi mi kontrolü    5
+           if [ ${AGGCHK:-0} = 1 ];then AGGCHK=5;fi
+           fi
+           AGGCHK=`echo $AGGCHK|sed 's/ //g'`
+           sumcolcount=`echo $col|grep -e SUM -e sum -e COUNT -e count -e MAX -e max -e MIN -e min -e AVG -e avg |sed 's/SUM(//g;s/sum(//g;s/COUNT(//g;s/count(//g;s/MAX(//g;s/max(//g;s/MIN(//g;s/min(//g;s/AVG(//g;s/avg(//g'|sed 's/)//g'|wc -l`
+           if [ $sumcolcount = 1 ];then
+              sumcolname=`echo $col|grep -e SUM -e sum -e COUNT -e count -e MAX -e max -e MIN -e min -e AVG -e avg|sed 's/SUM(//g;s/sum(//g;s/COUNT(//g;s/count(//g;s/MAX(//g;s/max(//g;s/MIN(//g;s/min(//g;s/AVG(//g;s/avg(//g'|sed 's/)//g'`
+              sumcolname=`echo $sumcolname|tr '[:lower:]' '[:upper:]'`            
+              sumcolnum=`cat $CATALOG/$table.desc|grep $sumcolname|cut -d ":" -f 1`
+              sumcolcount=0
+              col=$sumcolname
+           fi
+           if [ ${col:-"~"} != "~" ];then
+              flag=0
+              for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`    # Select edilecek kolon description dosyasında var mı kontrolu yapılıyor
+               do 
+                 colup=`echo $col|tr '[:lower:]' '[:upper:]'`        # Kolon buyuk harfe cevriliyor
+                 repup=`echo $i|tr '[:lower:]' '[:upper:]'`          # Repository kolon buyuk harfe cevriliyor
+                 if [ $colup = $repup ];then
+                    flag=1
+                 fi 
+               done
+              if  [ $flag != 1 ];then                                # Kolon repository de bulundu mu kontrolu
+                  echo "ERR: 1111 Identifier not found:$colup in table:$table"
+                  exit 1
+              fi
+              sno=`cat $CATALOG/$table.desc|grep -i ":"${col:-"~"}|awk -F ":" '{print $1}'` #kolonun text dosyasındaki sıra numarası bulunuyor
+#                                                   # Sorgulamanın headerı oluşturulmaya başlanıyor
+              lenheader=`echo $col|awk ' { print length($1) };'`
+              lenheader=`expr $colw - $lenheader`
+              colpad=${headbase:0:$lenheader}
+              header=$header$col$colpad" "
+              lencol=`echo  $col|awk ' { print length($1); }''`
+              if  [ $lencol -lt $colw ];then
+                  lencol=$colw
+              fi
+              dashcol=${dashbase:0:$lencol}                            # query başlığı hazırlanıyor
+              dash=$dash" "$dashcol
+              frmt=$frmt"%-${colw}s "
+              if [ $sno != ${sumcolnum:-0} ];then
+                  prn=$prn"$"$sno"\";\""                               # awk'ın print edeceği kolon isimleri concatenate ediliyor
+              fi
+                  prn2=$prn2"$"$sno","
+           fi
+           j=$(( $j + 1 ))
+          done
+        #prnt="printf \""$frmt"\\n\",b,a[b]"                           # awk için printf komutu hazırlanıyor 
+        #prnt="printf \"%-20s %-20s \n\", b,a[b]"                      # awk için printf komutu hazırlanıyor 
+        len3=`echo $prn|awk '{ print length($0); }'`
+        len3=`expr $len3 - 3`
+        prn=${prn:0:$len3}
+        prnCNT=`echo "d["$prn"]"`                                      # AVG hesaplamada awk  için ayrı bir array açılıyor
+        prn=`echo "a["$prn"]."`                                        # SUM,COUNT,MIN,MAX,AVG de kullanılmak üzere awk için array hazırlandı
+        len2=`echo $prn2|awk '{ print length($0); }'`
+        len2=`expr $len2 - 1`
+        prn2=${prn2:0:$len2}
+        len=`echo $prn|awk '{ print length($0); }'`
+        len=`expr $len - 1`
+        prn=${prn:0:$len}
+        echo $header|tr '[:lower:]' '[:upper:]'                        # Sorgulamanın başlığı yazdırılıyor
+        echo $dash
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'`  # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`            # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          awkcondcont=`echo $awkcond`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/gI'`
+         done
+         if [ ${4:-"~"} = "WHERE" ] || [ ${4:-"~"} = "where" ];then    # WHERE condition var 
+            GRPPOS=`echo $awkcond | tr '[:lower:]' '[:upper:]' |awk '{for(i=1;i<=length($0);i++) {if (substr($0,i,8)=="GROUP BY") {print i}}}'`
+            GRPPOS=`expr $GRPPOS - 2`
+            awkcond=${awkcond:0:$GRPPOS}
+            case  "${AGGCHK}" in    # işlem SUM işlemi
+             "1")  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond ) {  ${prn} += $""${sumcolnum} ; } } END { for ( b in a) { print b,\";\",a[b];count +=1; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" ,\$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh    # SUM
+             ;;
+             "2") echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { if ( $awkcond ) { ${prn}++; } }  END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh     # COUNT
+             ;; 
+             "3") echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { if ( $awkcond ) { if ( $prn < $""${sumcolnum} ) {  $prn = $""${sumcolnum} ;  } } }  END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh     # MAX
+             ;;
+             "4") echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' BEGIN{ MIN=100000000 } { if ( $awkcond ) { { if ( MIN >= $""${sumcolnum} ) {  MIN = $""${sumcolnum} ; $prn= $""${sumcolnum}; } } } }   END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh    # MIN
+             ;;
+             "5" )  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { if ( $awkcond )  { $prn  += $""${sumcolnum} ; $prnCNT++;} }  END { for ( b in a) { print b,\";\",a[b]/d[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh     # AVG
+             ;;
+             *) echo "ERROR:3100 Wrong Aggregation Operator"
+             ;;
+            esac
+         else   #  WHERE Condition yok
+            case  "$AGGCHK" in    # işlem SUM işlemi   
+             "1")   echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ ${prn} += $""${sumcolnum} ; } END { for ( b in a) { print b,\";\",a[b];count +=1; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" ,\$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh    # SUM
+             ;;
+             "2")  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { ${prn}++ }   END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh       # COUNT
+             ;;
+             "3")  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { if ( $prn < $""${sumcolnum} ) {  $prn = $""${sumcolnum} ;  } }   END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh      # MAX
+             ;;
+             "4")  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" 'BEGIN{ MIN=100000000 } { if ( MIN >= $""${sumcolnum} ) {  MIN = $""${sumcolnum} ; $prn= $""${sumcolnum}; } }   END { for ( b in a) { print b,\";\",a[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh     # MIN
+             ;;
+             "5")  echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" ' { $prn  += $""${sumcolnum} ; $prnCNT++  }   END { for ( b in a) { print b,\";\",a[b]/d[b]; } }'|awk -F \";\" '{ printf \"%-${colw}s %-${colw}s %-${colw}s %-${colw}s\n\" , \$1,\$2,\$3,\$4 } END{ print NR \" rows selected\"}'" > _tmpsel.$SESSIONID.sh     # AVG
+             ;;
+             *) echo "ERROR:3101 Wrog Aggregation Operant"
+                exit 1
+             ;;
+            esac
+         fi
+        else  #################################################################################################################################
+         numcol=$(cat $CATALOG/$table.desc|wc -l)                    # SELECT  column1,column22...... FROM .. routini
+         j=1
+         while [[ j -le $numcol ]] 
+          do
+           col=`echo ${cols}|awk -v a=$j -F "," '{print  $a;}'`
+           if [ ${col:-"~"} != "~" ];then
+              flag=0
+              for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`    # Select edilecek kolon description dosyasında var mı kontrolu yapılıyor
+               do 
+                 colup=`echo $col|tr '[:lower:]' '[:upper:]'`        # Kolon buyuk harfe cevriliyor
+                 repup=`echo $i|tr '[:lower:]' '[:upper:]'`          # Repository kolon buyuk harfe cevriliyor
+                 if [ $colup = $repup ];then
+                    flag=1
+                 fi 
+               done
+              if  [ $flag != 1 ];then                                # Kolon repository de bulundu mu kontrolu
+                  echo "ERR: 1100 Identifier not found:$colup in table:$table"
+                  exit 1
+              fi
+              sno=`cat $CATALOG/$table.desc|grep -i ":"${col:-"~"}|awk -F ":" '{print $1}'` #kolonun text dosyasındaki sıra numarası bulunuyor
+#                                                                    # Sorgulamanın headerı oluşturulmaya başlanıyor
+              lenheader=`echo $col|awk ' { print length($1) };'`
+              lenheader=`expr $colw - $lenheader`
+              colpad=${headbase:0:$lenheader}
+              header=$header$col$colpad" "
+              lencol=`echo  $col|awk ' { print length($1); }''`
+              if  [ $lencol -lt $colw ];then
+                  lencol=$colw
+              fi
+              dashcol=${dashbase:0:$lencol}                          # query başlığı hazırlanıyor
+              dash=$dash" "$dashcol
+#              frmt=$frmt"%-${colw}s "
+              frmt=$frmt"%${colw}s "
+              prn=$prn"substr($"$sno",1,$colw),"                     # awk'ın print edeceği kolon isimleri concatenate ediliyor
+           fi
+           j=$(( $j + 1 ))
+          done
+        prn="printf \""$frmt"\\n\","$prn                             # awk için printf komutu hazırlanıyor 
+        len=`echo $prn|awk '{ print length($0); }'`
+        len=`expr $len - 1`
+        prn=${prn:0:$len}
+        echo $header|tr '[:lower:]' '[:upper:]'                      # Sorgulamanın başlığı yazdırılıyor
+        echo $dash
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'`  # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`          # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          awkcondcont=`echo $awkcond`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/gI'`
+         done
+         if [ ${4:-"~"} = "WHERE" ] || [ ${4:-"~"} = "where" ];then
+            echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond ) { "${prn}";i++; } } END{print i \" rows selected\";}'" > _tmpsel.$SESSIONID.sh # SELECT ifadesi çalışıyor
+         else
+            echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" 'BEGIN { OFS=\" \" } { $prn; } END{print NR \" rows selected\";}'" > _tmpsel.$SESSIONID.sh # SELECT ifadesi çalışıyor
+         fi
+         fi                                                          # SQL routine SONU ###############################################
+       fi
+      ;;
+    esac          # Ana routini sonu
+       if [ -f $BIN/_tmpsel.$SESSIONID.sh ];then
+          if [ -f spoolfile ];then
+              userspoolfile=`cat spoolfile`
+              . ./_tmpsel.$SESSIONID.sh > $userspoolfile             # Hazırlanan script çıktısı spoolon yapıldıysa bir spool dosyasına çıkılıyor
+              echo "Please check your spool file $userspoolfile"
+          else
+              . ./_tmpsel.$SESSIONID.sh 2>> $SYS/STBSQL_RUN_SQL_ERROR.log   # Hazırlanan awk komutu shell script olarak run ediliyor
+           rm ./_tmpsel.$SESSIONID.sh
+          fi
+          SELECTSTATEMENT="select "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9  # SELECT ifadesi SQLAREA tablosuna yazılıyor
+          SYSDATE=`date +"%Y %m %d %H:%M"`
+          echo $SELECTSTATEMENT";"$SESSIONID";"$LOGGEDUSER";"$SYSDATE| tee -a  $TABLESPACE/SQLAREA.db > /dev/null
+       else
+          echo "Please check your syntax"
+       fi
+else 
+    echo "You have no access permission to $table"
+fi
+exit 0

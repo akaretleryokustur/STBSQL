@@ -1,0 +1,17 @@
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/BJKKADRO.db 2491 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/BJKKADRO.desc ; USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/CC.db 404230 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/CC.desc ; USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/EMK015.db 26760 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/EMK015.desc ; USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/EMK170.db 12842 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/EMK170.desc ; USER;cenk;
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/MUHASEBE.db 595 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/MUHASEBE.desc ; sys;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/PERSONEL.db 7144214 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/PERSONEL.desc ; USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/SQLAREA.db 6622 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/SQLAREA.desc ; sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/TAHAKKUK.db 8490 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/TAHAKKUK.desc TAB USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/aaa.db 2413 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/aaa.desc TAB USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/cenk.db 36 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/cenk.desc ; USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/devreq.db 1031 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/devreq.desc ; cenk;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/person.db 95 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/person.desc | USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/police.db 1248 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/police.desc | cenk;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/tables.db 2251 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/tables.desc WHITESPACE USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/tahsilat.db 25738 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/tahsilat.desc TAB USER;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/test.db 23 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/test.desc ; cenk;sys
+/Users/cenkkurt/Documents/STBSQL/TABLESPACE/test2.db 0 cenkkurt /Users/cenkkurt/Documents/STBSQL/CATALOG/test2.desc ; cenk;sys

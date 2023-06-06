@@ -1,0 +1,43 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL BUILTREPOSITORY 
+##################################################################
+#################################################################
+# Built STBSQL Repository
+##################################################################
+. ./lib
+##################################################################
+ls -o $TABLESPACE/*.db|awk -F " " '{printf "%20s %10s %20s\n", $8,$4,$3}' > $CATALOG/tables.1
+for i in `ls $CATALOG/*.desc`
+ do
+   echo $i >> $CATALOG/tables.2
+ done
+for i in `ls $CATALOG/*.delim`
+ do
+   cat $i >> $CATALOG/tables.3
+ done
+for i in `ls $CATALOG/*.user`
+ do 
+c=""
+for j in `cat $i`
+ do
+ c=$c";"$j
+ done
+ echo $c|awk '{print substr($1,2,10)}' >> $CATALOG/tables.4
+done
+paste $CATALOG/tables.1 $CATALOG/tables.2 $CATALOG/tables.3 $CATALOG/tables.4 > $TABLESPACE/tables1.db
+cat $TABLESPACE/tables1.db|tr -s \\t " " > $TABLESPACE/tables.db
+echo "1:TABLENAME" > $CATALOG/tables.desc
+echo "2:SIZE" >> $CATALOG/tables.desc
+echo "3:OSOWNER" >> $CATALOG/tables.desc
+echo "4:DESCNAME" >> $CATALOG/tables.desc
+echo "5:DELIMITER" >> $CATALOG/tables.desc
+echo "6:OWNER" >> $CATALOG/tables.desc
+rm  $CATALOG/tables.1
+rm  $CATALOG/tables.2
+rm  $CATALOG/tables.3
+rm  $CATALOG/tables.4
+rm $TABLESPACE/tables1.db
+exit 0

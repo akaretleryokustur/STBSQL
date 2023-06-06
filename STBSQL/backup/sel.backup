@@ -1,0 +1,124 @@
+##################################################################
+#  ShellQL Application by Cenk Kurt Jan 2014
+#  Description:ShellQL is a simple SQL interface for flat files 
+##################################################################
+#  ShellQL
+##################################################################
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+##################################################################
+if ! [ -f $CATALOG/$3.delim ];then                                             # Delimeter dosyası var mı kontrolu
+     echo "ERR:310 Delimeter file not found:$3.delim"
+     exit 1
+fi
+if ! [ -f $CATALOG/$3.desc ];then                                              # Description dosyası var mı kontrolu
+     echo "ERR:201 Description file not found"
+     exit 1
+fi
+if ! [ -f $TABLESPACE/$3.db ];then                                                # Data dosyası var mı kontrolu
+     echo "ERR: 902 Table $3.db not found"
+     exit 1
+fi
+##################################################################
+del1=`cat $CATALOG/$3.delim`                                                   # Table delimeter
+case "$del1" in
+       "WHITESPACE") del=" "
+       ;;
+       "TAB") del="	"
+       ;;
+       *) del=$del1
+       ;;
+esac
+cols=$1                                                               # Kolon adları
+table=$3                                                              # Table adı
+cond=$5" "$6" "$7" "$8" "$9                                           # WHERE condition
+tabledb=$table.db
+colw=`cat $BIN/columnwitdh`
+dashbase="-------------------------------------------------------------------"
+headbase="..................................................................."
+####################################################################
+cd $BIN
+if [ $cols = "\*" ];then
+   $cols="ALL"
+fi
+case "$cols" in
+      "ALL") cat $TABLESPACE/$tabledb|awk '{print $0;} END{print NR " rows selected";}'
+      ;;
+      *) 
+         numcol=$(cat $CATALOG/$table.desc|wc -l) 
+         j=1
+         while [[ j -le $numcol ]] 
+          do
+           col=`echo ${cols}|awk -v a=$j -F "," '{print  $a;}'`
+           if [ ${col:-"~"} != "~" ];then
+              flag=0
+              for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`                            # Select edilecek kolon description dosyasında var mı kontrolu yapılıyor
+               do
+                 colup=`echo $col|tr '[:lower:]' '[:upper:]'`                          # Kolon buyuk harfe cevriliyor
+                 repup=`echo $i|tr '[:lower:]' '[:upper:]'`                            # Repository kolon buyuk harfe cevriliyor
+                 if [ $colup = $repup ];then
+                    flag=1
+                 fi 
+               done
+              if  [ $flag != 1 ];then                                               # Kolon repository de bulundu mu kontrolu
+                  echo "ERR: 1100 Identifier not found:$colup in table:$table"
+                  exit 1
+              fi
+              sno=`cat $CATALOG/$table.desc|grep -i ":"${col:-"~"}|awk -F ":" '{print $1}'`  # kolonun text dosyasındaki sıra numarası bulunuyor
+              lenheader=`expr length "${col}"`                                      # Sorgulamanın headerı oluşturulmaya başlanıyor
+              lenheader=`expr $colw - $lenheader`
+              colpad=${headbase:0:$lenheader}
+              header=$header$col$colpad" "
+              lencol=`expr length $col`
+              if  [ $lencol -lt $colw ];then
+                  lencol=$colw
+              fi
+              dashcol=${dashbase:0:$lencol}                                         # query başlığı hazırlanıyor
+              dash=$dash" "$dashcol
+              frmt=$frmt"%-${colw}s "
+              prn=$prn"$"$sno","                                                    # awk'ın print edeceği kolon isimleri concatenate ediliyor
+          fi
+          j=$(( $j + 1 ))
+        done
+        prn="printf \""$frmt"\\n\","$prn                                      # awk için printf komutu hazırlanıyor 
+        len=`expr length "${prn}"`
+        len=`expr $len - 1`
+        prn=${prn:0:$len}
+        echo $header|tr '[:lower:]' '[:upper:]'                               # Sorgulamanın başlığı yazdırılıyor
+        echo $dash
+        awkcond=`echo $cond |sed -e 's/!=/<>/g'|sed -e 's/ AND / \&\& /g'|sed -e 's/ OR / \|\| /g'|sed -e 's/=/==/g'|sed -e 's/<>/!=/g'`  # Where condition hazırlanıyor
+        awkcond=`echo $awkcond |sed -e 's/ and / \&\& /g'|sed -e 's/ or / \|\| /g'`  # Where condition awk ın tanıyacağı hale getirilmek üzere hazırlanıyor lowercase'ler
+        relcont=0
+        for i in `cat $CATALOG/$table.desc|cut -d ":" -f 2`                            # where condition daki kolonlar bulunuyor
+         do
+          col=$i
+          sno=`cat $CATALOG/$table.desc|grep -m 1 ":"${col}|awk -F ":" '{print $1}'`
+          if [ ${sno:-"~" } = "~" ];then                                        # Where condition daki kolon adı repository de var mı kontrolü yapılıyor
+             echo "ERR:301 Relational identifier not found:$col"
+             exit 1
+          fi
+          awkcondcont=`echo $awkcond|tr '[:lower:]' '[:upper:]'`
+          awkcond=`echo $awkcondcont|sed 's/'$col'/$'$sno'/g'`
+          if [ $awkcondcont != $awkcond ];then                                   # Where conditiondaki kolon adı repsoitoryde varsa flag 1 oluyor
+             relcont=1
+          fi
+         done
+       if [ $relcont = 0 ];then
+          echo "ERR:302 Relational identifier not found in:$cond"
+          exit 1
+       fi
+       if [ ${4:-"~"} = "WHERE" ] || [ ${4:-"~"} = "where" ];then
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" '{ if ( $awkcond ) { $prn;i++; } } END{print i \" rows selected\";}'" > s1.sh # SELECT ifadesi çalışıyor
+       else
+          echo "cat $TABLESPACE/$tabledb |awk -F \"${del}\" 'BEGIN { OFS=\" \" } { $prn; } END{print NR \" rows selected\";}'" > s1.sh # SELECT ifadesi çalışıyor
+       fi
+       if [ -f spoolfile ];then
+          userspoolfile=`cat spoolfile`
+          . ./s1.sh > $userspoolfile                                            # Hazırlanan script çıktısı spoolon yapıldıysa bir spool dosyasına çıkılıyor
+          echo "Please check your spool file $userspoolfile"
+       else
+          . ./s1.sh                                                             # Hazırlanan awk komutu shell script olarak run ediliyor
+       fi
+      ;;
+esac

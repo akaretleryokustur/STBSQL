@@ -1,0 +1,16 @@
+####################################################
+# STBSQL 
+####################################################
+# Edit table using vi editor
+####################################################
+. ./lib
+if [ -f $CATALOG/$1.desc ];then
+   vi $TABLESPACE/$1.db
+   echo "Tabled edited."
+   if [ -f $CATALOG/$1.rollbackseg ];then  # Eğer tabloya ait rollback segment varsa tablo elden editlendiği için silmek gerekiyor
+      rm $CATALOG/$1.rollbackseg
+   fi
+else
+   echo "Table does not exist."
+fi
+exit 0

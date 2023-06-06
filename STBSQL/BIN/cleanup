@@ -1,0 +1,38 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL CLEANUP 
+##################################################################
+# Cleanup working file# Cleanup working files
+. ./lib
+##################################################################
+
+if [ -f $BIN/_tmpsel.sh ];then
+   rm $BIN/_tmpsel.$SESSIONID.sh
+fi
+if [ -f $BIN/_tmpdel1.$SESSIONID.sh ];then
+   rm $BIN/_tmpdel1.$SESSIONID.sh
+fi
+if [ -f $BIN/_tmpupd1.$SESSIONID.sh ];then
+   rm $BIN/_tmpupd1.$SESSIONID.sh
+fi
+if [ -f $BIN/_tmpupd2.$SESSIONID.sh ];then
+   rm $BIN/_tmpupd2.$SESSIONID.sh
+fi
+if [ -f $CATALOG/tables.1 ];then
+   rm $CATALOG/tables.1
+fi
+if [ -f $CATALOG/tables.2 ];then
+   rm $CATALOG/tables.2
+fi
+if [ -f $CATALOG/tables.3 ];then
+   rm $CATALOG/tables.3
+fi
+if [ -f $CATALOG/tables.4 ];then
+   rm $CATALOG/tables.4
+fi
+if [ -f $BIN/spoolfile ];then
+   rm $BIN/spoolfile
+fi
+exit 0

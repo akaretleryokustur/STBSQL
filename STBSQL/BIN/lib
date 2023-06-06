@@ -1,0 +1,10 @@
+#First you have to set directory path below related on your instaillation path
+RDIR=/Users/cenkkurt/Documents/STBSQL
+CATALOG=`cat $RDIR/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat $RDIR/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat $RDIR/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+SYS=`cat $RDIR/SYS/conf|grep "SYS"|awk -F "=" '{print $2}'`
+export CATALOG
+export TABLESPACE
+export BIN
+export SYS

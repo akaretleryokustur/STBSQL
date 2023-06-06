@@ -1,0 +1,43 @@
+##################################################################
+#  STBSQL Application by Cenk Kurt Jan 2014
+#  Description:STBSQL is a simple SQL interface for flat files
+##################################################################
+#  STBSQL REVOKE
+##################################################################
+# revoke  access from  <tablename> for  <username>
+##
+##
+. ./lib
+LOGGEDUSER=`cat $SYS/loggeduser.user.$SESSIONID`               #login olan user
+SYSUSER=`cat $SYS/dba.user|grep -i $LOGGEDUSER|wc -l`           #DBA user
+if [ $SYSUSER = 0 ];then
+   echo "$USER user has no DBA permission."
+   exit 1
+else
+  if [[ $1 != "access" &&  $1 != "ACCESS" ]];then
+     echo "usage:  revoke  access from  <tablename> for <username>>"
+    exit
+  fi
+  if [[ $2 != "from" &&  $2 != "FROM" ]];then
+     echo "usage:  revoke  access from  <tablename> for <username>"
+     exit
+  fi
+  if [[ $4 != "for" &&  $4 != "FOR" ]];then
+     echo "usage:  revoke  access from  <tablename> for <username>"
+     exit
+  fi
+
+  if ! [[ -f $CATALOG/$3.desc  ]];then
+     echo "Table $3 does not exist."
+     exit
+  fi
+  count=`cat $CATALOG/$3.user|grep -i $5|wc -l`
+  if [ $count = 0 ];then
+     echo "$LOGGEDUSER has no access permission on" $3 "table."
+     exit
+  fi
+  cat $CATALOG/$3.user|grep -v $5>$CATALOG/$3.user.$SESSIONID
+  rm $CATALOG/$3.user
+  mv $CATALOG/$3.user.$SESSIONID  $CATALOG/$3.user
+  echo "Access permission revoked."
+fi

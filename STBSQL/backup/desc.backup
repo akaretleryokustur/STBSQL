@@ -1,0 +1,15 @@
+###################################################################
+CATALOG=`cat /home/bahisek/SYS/conf|grep "CATALOG"|awk -F "=" '{print $2}'`
+TABLESPACE=`cat /home/bahisek/SYS/conf|grep "TABLESPACE"|awk -F "=" '{print $2}'`
+BIN=`cat /home/bahisek/SYS/conf|grep "BIN"|awk -F "=" '{print $2}'`
+##################################################################
+if [ -f $TABLESPACE/$1.db ];then
+echo "S COLUMN"
+echo "N NAME"
+echo "- ------"
+cat $CATALOG/$1.desc
+echo "Table Delimiter is;"
+cat $CATALOG/$1.delim
+else
+echo "$1 table not found"
+fi
